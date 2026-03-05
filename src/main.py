@@ -1,0 +1,1 @@
+# panggil model nya di sini nanti, ini main nya
