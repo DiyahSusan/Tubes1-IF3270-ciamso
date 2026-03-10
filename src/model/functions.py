@@ -32,10 +32,14 @@ def hyperbolic_tangent_prime(x):
     return (2 / (np.exp(x) - np.exp(-x)))**2
 
 def softmax(x):
-    pass
+    x = np.array(x)
+    x_shifted = x - np.max(x)
+    exp_x = np.exp(x_shifted)
+    return exp_x/np.sum(exp_x)
 
 def softmax_prime(x):
-    pass
+    s = softmax(x).reshape(-1,1)
+    return np.diagflat(s) - np.dot(s,s.T)
 
 # loss function
 def mse(y_true, y_pred): 
@@ -45,10 +49,14 @@ def mse_prime(y_true, y_pred):
     return 2 * (y_pred - y_true) / y_true.size
 
 def binary_cross_entropy(y_true, y_pred): 
-    pass
+    epsilon = 1e-15
+    y_pred = np.clip(y_pred, epsilon, 1. - epsilon)
+    return -np.mean(y_true * np.log(y_pred) + (1-y_true) * np.log(1-y_pred))
 
 def bce_prime(y_true, y_pred): 
-    pass
+    epsilon = 1e-15
+    y_pred = np.clip(y_pred, epsilon, 1. - epsilon)
+    return ((1-y_true)/(1-y_pred) - (y_true/y_pred)/y_true.size)
 
 def categorical_cross_entropy(y_true, y_pred): 
     n = y_true.shape[0]
