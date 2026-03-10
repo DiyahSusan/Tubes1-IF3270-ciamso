@@ -5,10 +5,10 @@ import numpy as np
 
 # fungsi aktivasi dan turunan pertamanya
 def linear(x):
-    pass
+    return x
 
 def linear_prime(x):
-    pass
+    return 1
 
 def relu(x):
     pass
@@ -17,10 +17,10 @@ def relu_prime(x):
     pass
 
 def sigmoid(x):
-    pass
+    return 1/(1+ np.exp(-x))
 
 def sigmoid_prime(x):
-    pass
+    return sigmoid(x) * (1 - sigmoid(x))
 
 def hyperbolic_tangent(x):
     pass
@@ -46,6 +46,13 @@ def bce_prime(y_true, y_pred):
     pass
 
 def categorical_cross_entropy(y_true, y_pred): 
-    pass
+    n = y_true.shape[0]
+    epsilon = 1e-15
+    y_pred = np.clip(y_pred, epsilon, 1. - epsilon)
+    return -np.sum(y_true * np.log(y_pred)) / n
+            
 def cce_prime(y_true, y_pred): 
-    pass
+    n = y_true.shape[0]
+    epsilon = 1e-15
+    y_pred = np.clip(y_pred, epsilon, 1. - epsilon)
+    return -(y_true / y_pred)/n
