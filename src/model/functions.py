@@ -11,10 +11,13 @@ def linear_prime(x):
     return 1
 
 def relu(x):
-    pass
+    return np.max(0, x)
 
 def relu_prime(x):
-    pass
+    if x > 0:
+        return 1
+    else:
+        return 0
 
 def sigmoid(x):
     return 1/(1+ np.exp(-x))
@@ -23,10 +26,10 @@ def sigmoid_prime(x):
     return sigmoid(x) * (1 - sigmoid(x))
 
 def hyperbolic_tangent(x):
-    pass
+    return np.tanh(x)
 
 def hyperbolic_tangent_prime(x):
-    pass
+    return (2 / (np.exp(x) - np.exp(-x)))**2
 
 def softmax(x):
     pass
@@ -36,12 +39,14 @@ def softmax_prime(x):
 
 # loss function
 def mse(y_true, y_pred): 
-    pass
+    return np.mean(np.power(y_true - y_pred, 2))
+
 def mse_prime(y_true, y_pred): 
-    pass
+    return 2 * (y_pred - y_true) / y_true.size
 
 def binary_cross_entropy(y_true, y_pred): 
     pass
+
 def bce_prime(y_true, y_pred): 
     pass
 
