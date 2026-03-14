@@ -35,7 +35,7 @@ class NeuralNetwork:
         results = []
 
         for sample in input_data:
-            output = sample
+            output = sample.reshape(1, -1) 
             for layer in self.layers:
                 output = layer.forward(output)
             results.append(output)
