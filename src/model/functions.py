@@ -26,7 +26,7 @@ def hyperbolic_tangent(x):
     return np.tanh(x)
 
 def hyperbolic_tangent_prime(x):
-    return (2 / (np.exp(x) - np.exp(-x)))**2
+    return 1 - np.tanh(x)**2
 
 def softmax(x):
     x = np.array(x)
