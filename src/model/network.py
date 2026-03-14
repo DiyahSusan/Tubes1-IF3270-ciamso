@@ -50,16 +50,19 @@ class NeuralNetwork:
         for epoch in range(epochs):
             err = 0
             for x,y in zip(x_train, y_train):
-                output = x
+                input_2d = x.reshape(1, -1)
+                target_2d = y.reshape(1, -1)
+
+                output = input_2d
                 # forward
                 for layer in self.layers:
                     output = layer.forward(output)
 
                 # hitung loss
-                err += self.loss(y, output)
+                err += self.loss(target_2d, output)
 
                 # backward
-                error = self. loss_prime(y, output)
+                error = self.loss_prime(target_2d, output)
                 for layer in reversed(self.layers):
                     error = layer.backward(error, lr)
 

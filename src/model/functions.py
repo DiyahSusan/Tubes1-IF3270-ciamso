@@ -11,13 +11,10 @@ def linear_prime(x):
     return 1
 
 def relu(x):
-    return np.max(0, x)
+    return np.maximum(0, x)
 
 def relu_prime(x):
-    if x > 0:
-        return 1
-    else:
-        return 0
+    return (x > 0).astype(float)
 
 def sigmoid(x):
     return 1/(1+ np.exp(-x))

@@ -1,4 +1,4 @@
-from src.model.layers import Layer
+from model.layers import Layer
 
 class ActivationLayer(Layer):
     #  base class untuk aktivasi, tinggal ganti fungsi matematika di dalamnya
