@@ -53,7 +53,9 @@ def binary_cross_entropy(y_true, y_pred):
 def bce_prime(y_true, y_pred): 
     epsilon = 1e-15
     y_pred = np.clip(y_pred, epsilon, 1. - epsilon)
-    return ((1-y_true)/(1-y_pred) - (y_true/y_pred)/y_true.size)
+    n = y_true.size
+    
+    return -(y_true / y_pred - (1 - y_true) / (1 - y_pred)) / n
 
 def categorical_cross_entropy(y_true, y_pred): 
     n = y_true.shape[0]
