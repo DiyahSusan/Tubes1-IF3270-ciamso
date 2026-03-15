@@ -22,7 +22,18 @@ def normal_init(shape, mean, variance, seed=None):
     return np.random.normal(mean, std_dev, size=shape)
 
 # bonus kalo mau
-def xavier_init(shape): 
-    pass
-def he_init(shape): 
-    pass
+def xavier_init(shape, seed=None): 
+    if seed is not None:
+        np.random.seed(seed)
+    
+    n_in, n_out = shape
+    limit = np.sqrt(6.0 / (n_in + n_out))
+    return np.random.uniform(-limit, limit, size=shape)
+
+def he_init(shape , seed=None): 
+    if seed is not None:
+        np.random.seed(seed)
+    
+    n_in, n_out = shape
+    std = np.sqrt(2.0 / n_in)
+    return np.random.normal(0, std, size=shape)
