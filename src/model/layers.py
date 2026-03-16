@@ -61,5 +61,5 @@ class DenseLayer(Layer):
         if self.l1_lambda > 0:
             reg_loss += self.l1_lambda * np.sum(np.abs(self.weights))
         if self.l2_lambda > 0:
-            reg_loss += self.l2_lambda * np.sum(np.square(self.weights))
+            reg_loss += 0.5 * self.l2_lambda * np.sum(np.square(self.weights))
         return reg_loss
