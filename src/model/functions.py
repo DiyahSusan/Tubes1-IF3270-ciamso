@@ -34,13 +34,13 @@ class ActivationFunctions:
 
     def softmax(self, x):
         x = np.array(x)
-        x_shifted = x - np.max(x)
+        x_shifted = x - np.max(x, axis=1, keepdims=True)
         exp_x = np.exp(x_shifted)
-        return exp_x/np.sum(exp_x)
+        return exp_x / np.sum(exp_x, axis=1, keepdims=True)
 
     def softmax_prime(self, x):
-        s = self.softmax(x).reshape(-1,1)
-        return np.diagflat(s) - np.dot(s,s.T)
+        # gradient dari loss lgsg diterusin ke next dense layer
+        return np.ones_like(x) 
 
 # loss function
 class LossFunctions:
