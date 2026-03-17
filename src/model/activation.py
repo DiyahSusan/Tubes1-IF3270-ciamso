@@ -16,4 +16,3 @@ class ActivationLayer(Layer):
 
     def backward(self, output_error, learning_rate):
         return self.activation_prime(self.input) * output_error
-    

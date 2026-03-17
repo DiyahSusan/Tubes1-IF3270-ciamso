@@ -100,9 +100,15 @@ class NeuralNetwork:
                 self.history['val_loss'].append(val_loss)
 
             if verbose == 1:
-                msg = f"Epoch {epoch+1}/{epochs}, Train Loss={train_loss:.6f}"
+                progress = (epoch + 1) / epochs
+                bar_length = 20
+                filled = int(bar_length * progress)
+                bar = "#" * filled + "-" * (bar_length - filled)
+
+                msg = f"[{bar}] Epoch {epoch+1}/{epochs} | Train Loss: {train_loss:.6f}"
                 if val_loss is not None:
-                    msg += f", Val Loss={val_loss:.6f}"
+                    msg += f" | Val Loss: {val_loss:.6f}"
+
                 print(msg)
 
         return self.history
