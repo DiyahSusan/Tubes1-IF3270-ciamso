@@ -49,6 +49,27 @@ class ActivationFunctions:
 
         return np.array(batch_jacobian)
 
+    def leaky_relu(self, x, alpha=0.01):
+        return np.where(x > 0, x, alpha * x)
+    
+    def leaky_relu_prime(self, x, alpha=0.01):
+        dx = np.ones_like(x)
+        dx[x < 0] = alpha
+        return dx
+    
+    def elu(self, x, alpha=1.0):
+        return np.where(x > 0, x, alpha * (np.exp(x) - 1))
+    
+    def elu_prime(self, x, alpha=1.0):
+        return np.where(x > 0, 1, alpha * np.exp(x))
+    
+    def swish(self, x, b=1.0):
+        return x * self.sigmoid(b * x)
+    
+    def swish_prime(self, x, b=1.0):
+        sigmoid_bx = self.sigmoid(b * x)
+        return sigmoid_bx + b * x * sigmoid_bx * (1 - sigmoid_bx)
+
 # loss function
 class LossFunctions:
     def __init__(self):        
