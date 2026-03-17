@@ -1,6 +1,8 @@
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
+from IPython.display import clear_output
+import math
 
 class NeuralNetwork:
     # intinya ini nanti dipake buat menumpuk layer layer yang dibuat
@@ -51,6 +53,8 @@ class NeuralNetwork:
 
         n_samples = len(x_train)
         n_batches = int(np.ceil(n_samples / batch_size))
+
+        epoch_logs = []
         
         for epoch in range(epochs):
             indices = np.random.permutation(n_samples)
@@ -98,18 +102,28 @@ class NeuralNetwork:
                 val_loss = val_data_loss + val_reg_loss
 
                 self.history['val_loss'].append(val_loss)
+            
+            msg = f"Epoch {epoch+1}/{epochs} | Train Loss: {train_loss:.6f}"
+            if val_loss is not None:
+                msg += f" | Val Loss: {val_loss:.6f}"
+            epoch_logs.append(msg)
 
+            # live progress bar saat training
             if verbose == 1:
                 progress = (epoch + 1) / epochs
                 bar_length = 20
                 filled = int(bar_length * progress)
                 bar = "#" * filled + "-" * (bar_length - filled)
 
-                msg = f"[{bar}] Epoch {epoch+1}/{epochs} | Train Loss: {train_loss:.6f}"
-                if val_loss is not None:
-                    msg += f" | Val Loss: {val_loss:.6f}"
-
+                clear_output(wait=True)
+                print(f"[{bar}] {epoch+1}/{epochs}")
                 print(msg)
+
+        if verbose == 1:
+            clear_output(wait=True)
+            print("Training selesai.\n")
+            for log in epoch_logs:
+                print(log)
 
         return self.history
 
