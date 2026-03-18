@@ -2,7 +2,11 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 from IPython.display import clear_output
-import math
+
+from model.layers import DenseLayer
+from model.activation import ActivationLayer
+from model.functions import ActivationFunctions
+from model.initializers import Initializers
 
 class NeuralNetwork:
     # intinya ini nanti dipake buat menumpuk layer layer yang dibuat
@@ -174,3 +178,71 @@ class NeuralNetwork:
                 plt.show()
             else:
                 print(f"Layer {i} tidak mempunyai weights_gradient.")
+
+
+class FFNN(NeuralNetwork):
+    def __init__(self, layers, activations, init_func='xavier', l1=0.0, l2=0.0, seed=None, seed_mode="same", mean=0.0, variance=1.0, low=-0.05, high=0.05):
+        super().__init__()
+
+        if not isinstance(layers, (list, tuple)) or len(layers) < 2:
+            raise ValueError("parameter 'layers' harus berupa list/tuple dengan minimal 2 elemen, contoh: [64, 16, 1].")
+        if len(activations) != len(layers) - 1:
+            raise ValueError("panjang list 'activations' harus sama dengan jumlah layer transformasi (panjang layers - 1).")
+
+        self._activation_functions = ActivationFunctions()
+        self._initializers = Initializers()
+        self.mean = mean
+        self.variance = variance
+        self.low = low
+        self.high = high
+        initializer_list = self._check_list_init_func(init_func, len(layers) - 1)
+
+        for i in range(len(layers) - 1):
+            input_size = layers[i]
+            output_size = layers[i + 1]
+
+            init_func = self._check_init_func(initializer_list[i])
+            layer_seed = None
+            if seed is not None:
+                if seed_mode == "same":
+                    layer_seed = seed
+                elif seed_mode == "incremental":
+                    layer_seed = seed + i
+                else:
+                    raise ValueError("seed_mode harus 'same' atau 'incremental'")
+
+            self.add(DenseLayer(input_size, output_size, init_func, l1_lambda=l1, l2_lambda=l2, seed=layer_seed))
+            activation_func, activation_prime_func = self._check_activation_func(activations[i])
+            self.add(ActivationLayer(activation_func, activation_prime_func))
+
+    def _check_list_init_func(self, init_func, n_layers):
+        if isinstance(init_func, (list, tuple)):
+            if len(init_func) != n_layers:
+                raise ValueError("'init_func' harus memiliki panjang yang sama dengan jumlah layer transformasi.")
+            return list(init_func)
+        return [init_func] * n_layers
+
+    def _check_init_func(self, initializer):
+        if isinstance(initializer, str):
+            if initializer == 'he':
+                return lambda shape, seed=None: self._initializers.he_init(shape, seed=seed)
+            if initializer == 'xavier':
+                return lambda shape, seed=None: self._initializers.xavier_init(shape, seed=seed)
+            if initializer == 'normal':
+                return lambda shape, seed=None: self._initializers.normal_init(shape, mean=self.mean, variance=self.variance, seed=seed)
+            if initializer == 'uniform':
+                return lambda shape, seed=None: self._initializers.uniform_init(shape, low=self.low, high=self.high, seed=seed)
+            if initializer == 'zero':
+                return lambda shape, seed=None: self._initializers.zero_init(shape)
+        raise ValueError(f"Initializer `{initializer}` tidak ditemukan.")
+
+    def _check_activation_func(self, activation_func):
+        if isinstance(activation_func, str):
+            if activation_func == 'tanh':
+                activation_func = 'hyperbolic_tangent'
+
+            if activation_func in ['linear', 'relu', 'sigmoid', 'hyperbolic_tangent', 'softmax', 'leaky_relu', 'elu', 'swish']:
+                prime = f"{activation_func}_prime"    
+                if hasattr(self._activation_functions, activation_func) and hasattr(self._activation_functions, prime):
+                    return getattr(self._activation_functions, activation_func), getattr(self._activation_functions, prime)
+        raise ValueError(f"Activation function `{activation_func}` tidak ditemukan.")
