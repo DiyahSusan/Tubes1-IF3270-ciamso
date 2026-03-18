@@ -4,67 +4,103 @@ import numpy as np
 # TODO : implementasikan sesuai kebutuhan
 
 # fungsi aktivasi dan turunan pertamanya
-def linear(x):
-    return x
+class ActivationFunctions:
+    def __init__(self):
+        pass
 
-def linear_prime(x):
-    return 1
+    def linear(self, x):
+        return x
 
-def relu(x):
-    return np.maximum(0, x)
+    def linear_prime(self, x):
+        return np.ones_like(x)
 
-def relu_prime(x):
-    return (x > 0).astype(float)
+    def relu(self, x):
+        return np.maximum(0, x)
 
-def sigmoid(x):
-    return 1/(1+ np.exp(-x))
+    def relu_prime(self, x):
+        return (x > 0).astype(float)
 
-def sigmoid_prime(x):
-    return sigmoid(x) * (1 - sigmoid(x))
+    def sigmoid(self, x):
+        return 1/(1+ np.exp(-x))
 
-def hyperbolic_tangent(x):
-    return np.tanh(x)
+    def sigmoid_prime(self, x):
+        return self.sigmoid(x) * (1 - self.sigmoid(x))
 
-def hyperbolic_tangent_prime(x):
-    return 1 - np.tanh(x)**2
+    def hyperbolic_tangent(self, x):
+        return np.tanh(x)
 
-def softmax(x):
-    x = np.array(x)
-    x_shifted = x - np.max(x)
-    exp_x = np.exp(x_shifted)
-    return exp_x/np.sum(exp_x)
+    def hyperbolic_tangent_prime(self, x):
+        return 1 - np.tanh(x)**2
 
-def softmax_prime(x):
-    s = softmax(x).reshape(-1,1)
-    return np.diagflat(s) - np.dot(s,s.T)
+    def softmax(self, x):
+        x = np.array(x)
+        x_shifted = x - np.max(x, axis=1, keepdims=True)
+        exp_x = np.exp(x_shifted)
+        return exp_x / np.sum(exp_x, axis=1, keepdims=True)
+
+    def softmax_prime(self, x):
+        s = self.softmax(x)
+        batch_jacobian = []
+
+        for row in s:
+            row = row.reshape(-1, 1)
+            jacobian = np.diagflat(row) - np.dot(row, row.T)
+            batch_jacobian.append(jacobian)
+
+        return np.array(batch_jacobian)
+
+    def leaky_relu(self, x, alpha=0.01):
+        return np.where(x > 0, x, alpha * x)
+    
+    def leaky_relu_prime(self, x, alpha=0.01):
+        dx = np.ones_like(x)
+        dx[x < 0] = alpha
+        return dx
+    
+    def elu(self, x, alpha=1.0):
+        return np.where(x > 0, x, alpha * (np.exp(x) - 1))
+    
+    def elu_prime(self, x, alpha=1.0):
+        return np.where(x > 0, 1, alpha * np.exp(x))
+    
+    def swish(self, x, b=1.0):
+        return x * self.sigmoid(b * x)
+    
+    def swish_prime(self, x, b=1.0):
+        sigmoid_bx = self.sigmoid(b * x)
+        return sigmoid_bx + b * x * sigmoid_bx * (1 - sigmoid_bx)
 
 # loss function
-def mse(y_true, y_pred): 
-    return np.mean(np.power(y_true - y_pred, 2))
-
-def mse_prime(y_true, y_pred): 
-    return 2 * (y_pred - y_true) / y_true.size
-
-def binary_cross_entropy(y_true, y_pred): 
-    epsilon = 1e-15
-    y_pred = np.clip(y_pred, epsilon, 1. - epsilon)
-    return -np.mean(y_true * np.log(y_pred) + (1-y_true) * np.log(1-y_pred))
-
-def bce_prime(y_true, y_pred): 
-    epsilon = 1e-15
-    y_pred = np.clip(y_pred, epsilon, 1. - epsilon)
-    n = y_true.size
+class LossFunctions:
+    def __init__(self):        
+        pass    
     
-    return -(y_true / y_pred - (1 - y_true) / (1 - y_pred)) / n
+    def mse(self, y_true, y_pred): 
+        return np.mean(np.power(y_true - y_pred, 2))
 
-def categorical_cross_entropy(y_true, y_pred): 
-    n = y_true.shape[0]
-    epsilon = 1e-15
-    y_pred = np.clip(y_pred, epsilon, 1. - epsilon)
-    return -np.sum(y_true * np.log(y_pred)) / n
-            
-def cce_prime(y_true, y_pred): 
-    n = y_true.shape[0]
-    epsilon = 1e-15
-    y_pred = np.clip(y_pred, epsilon, 1. - epsilon)
-    return -(y_true / y_pred)/n
+    def mse_prime(self, y_true, y_pred): 
+        return 2 * (y_pred - y_true)
+
+    def binary_cross_entropy(self, y_true, y_pred): 
+        epsilon = 1e-15
+        y_pred = np.clip(y_pred, epsilon, 1. - epsilon)
+        return -np.mean(y_true * np.log(y_pred) + (1-y_true) * np.log(1-y_pred))
+
+    def bce_prime(self, y_true, y_pred): 
+        epsilon = 1e-15
+        y_pred = np.clip(y_pred, epsilon, 1. - epsilon)
+        n = y_true.size
+        
+        return -(y_true / y_pred - (1 - y_true) / (1 - y_pred))
+
+    def categorical_cross_entropy(self, y_true, y_pred): 
+        n = y_true.shape[0]
+        epsilon = 1e-15
+        y_pred = np.clip(y_pred, epsilon, 1. - epsilon)
+        return -np.sum(y_true * np.log(y_pred)) / n
+                
+    def cce_prime(self, y_true, y_pred): 
+        n = y_true.shape[0]
+        epsilon = 1e-15
+        y_pred = np.clip(y_pred, epsilon, 1. - epsilon)
+        return -(y_true / y_pred)
