@@ -46,13 +46,12 @@ class NeuralNetwork:
             output = layer.forward(output)
         return output
 
-    def train(self, x_train, y_train, x_val=None, y_val=None, 
-            epochs=10, batch_size=32, learning_rate=0.01, verbose=1):
-        
+    def train(self, x_train, y_train, x_val=None, y_val=None, epochs=10, batch_size=32, learning_rate=0.01, verbose=1, optimizer="gd", beta1=0.9, beta2=0.999, epsilon=1e-8):
         self.history = {'train_loss': [], 'val_loss': []}
 
         n_samples = len(x_train)
         n_batches = int(np.ceil(n_samples / batch_size))
+        t = 0 # timestamp adam
 
         epoch_logs = []
         
@@ -80,8 +79,9 @@ class NeuralNetwork:
 
                 # backward + update
                 error = self.loss_prime(y_batch, output)
+                t += 1
                 for layer in reversed(self.layers):
-                    error = layer.backward(error, learning_rate)
+                    error = layer.backward(error, learning_rate, optimizer=optimizer, t=t, beta1=beta1, beta2=beta2, epsilon=epsilon)
 
                 batch_reg_loss = self.get_total_regularization_loss()
                 batch_total_loss = batch_data_loss + batch_reg_loss
@@ -100,7 +100,6 @@ class NeuralNetwork:
                 val_data_loss = self.loss(y_val, val_output)
                 val_reg_loss = self.get_total_regularization_loss()
                 val_loss = val_data_loss + val_reg_loss
-
                 self.history['val_loss'].append(val_loss)
             
             msg = f"Epoch {epoch+1}/{epochs} | Train Loss: {train_loss:.6f}"
@@ -108,7 +107,7 @@ class NeuralNetwork:
                 msg += f" | Val Loss: {val_loss:.6f}"
             epoch_logs.append(msg)
 
-            # live progress bar saat training
+            # progress bar
             if verbose == 1:
                 progress = (epoch + 1) / epochs
                 bar_length = 20
