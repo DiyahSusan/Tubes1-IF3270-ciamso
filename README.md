@@ -31,14 +31,34 @@ Repositori ini berisi implementasi Feedforward Neural Network from scratch denga
      - Xavier initialization
      - He initialization
      - Optimizer Adam
+    
+## Struktur Proyek
+```text
+.
+├── README.md                 # Dokumentasi utama proyek
+├── doc/                      # Folder dokumen
+│   └── Tubes1_IF3270_K9.pdf  # Laporan resmi Tugas Besar
+└── src/                      # Source code utama
+    ├── model/                # Core Neural Network
+    │   ├── activation.py     # Implementasi Activation Layer
+    │   ├── function.py       # Fungsi loss dan fungsi aktifasi
+    │   ├── initializer.py    # Inisialisasi bobot 
+    │   ├── layers.py         # Implementasi DenseLayer
+    │   └── network.py        # Class Utama (NeuralNetwork)
+    └── test.ipynb            # Notebook training, visualisasi, pengujian
+```
        
 ## Cara Menjalankan Program
 1. Clone repository
 ``` bash   
 git clone https://github.com/DiyahSusan/Tubes1-IF3270-ciamso
 ```
-2. Import FFNN dari folder src.model
-3. Gunakan model seperti menggunakan library biasa
+2. Install requirements
+```
+pip install numpy matplotlib scikit-learn
+```
+3. Import FFNN dari folder src.model
+4. Gunakan model seperti menggunakan library biasa
 ```
 # contoh penggunaan
 
@@ -46,6 +66,4 @@ from model.network import FFNN
 
 model = FFNN(layers=layer_sizes, activations=activations, init_func=init_funcs)
 ```
-4. Untuk pengujian, jalankan test.ipynb pada folder src
-   
-
+5. Untuk pengujian, jalankan test.ipynb pada folder src dengan klik tombol run all
