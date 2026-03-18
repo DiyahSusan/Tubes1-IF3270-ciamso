@@ -27,6 +27,7 @@ Repositori ini berisi implementasi Feedforward Neural Network from scratch denga
      - Random dengan distribusi uniform
      - Random dengan distribusi normal
   4. Bonus
+     - Fungsi Aktivasi: Leaky RELU, ELU, Swish
      - RMSNormLayer
      - Xavier initialization
      - He initialization
