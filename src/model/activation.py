@@ -14,5 +14,5 @@ class ActivationLayer(Layer):
         self.output = self.activation(self.input) # terapkan fungsi aktivasi 
         return self.output
 
-    def backward(self, output_error, learning_rate):
+    def backward(self, output_error, learning_rate, **kwargs):
         return self.activation_prime(self.input) * output_error
